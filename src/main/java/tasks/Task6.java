@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /*
 Имеются
@@ -19,6 +20,15 @@ public class Task6 {
   public static Set<String> getPersonDescriptions(Collection<Person> persons,
                                                   Map<Integer, Set<Integer>> personAreaIds,
                                                   Collection<Area> areas) {
-    return new HashSet<>();
+
+    return persons.stream().flatMap(person -> {
+      Set<Integer> regionSet = personAreaIds.get(person.getId());
+      Set<String> areaNameSet = regionSet.stream()
+              .map(id ->
+                      areas.stream().filter(area -> area.getId() == id).map(area -> area.getName()).findFirst().get())
+              .collect(Collectors.toSet());
+      return areaNameSet.stream().map(areaName -> person.getFirstName() + " - " + areaName);
+    }).collect(Collectors.toSet());
+//    return new HashSet<>();
   }
 }
